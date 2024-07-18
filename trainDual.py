@@ -6,7 +6,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 def main():
-    data = KolendaImageCaption()
+    data = kolendaImageCaption()
     trData = data["train"]
     xs = trData['x']
     V = len(xs)
@@ -20,7 +20,7 @@ def main():
     OmegaMul = np.ones((N,N))
     for i in Omega:
         OmegaMul = OmegaMul * i
-    rho = 0.5
+    rho = 0.3
     OmegaTot = (1 - rho)*OmegaAdd + rho*OmegaMul
     eta = 1.0
     L,S = torch.linalg.eigh(torch.from_numpy(OmegaTot/eta))

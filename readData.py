@@ -2,6 +2,7 @@ import torch
 from torchvision import datasets, transforms
 from scipy.io import loadmat
 from pathlib import Path
+from disentanglement_datasets import DSprites
 
 """
 Algemeen formaat, van buiten naar binnen:
@@ -27,7 +28,7 @@ np-array: data
     
     # return {"train":train_loader,"test":test_loader}
 
-def KolendaImageCaption():
+def kolendaImageCaption():
     path = Path("data\KolendaImageCaption\Kolenda_withNoise.mat")
     mat = loadmat(path)
     """
@@ -45,3 +46,36 @@ def KolendaImageCaption():
     test = {}
     uit = {"train":train,"test":test}
     return uit
+
+def dSprites(bar=False):
+    """
+    Partition in 18 views
+    """
+    data = DSprites(root="./data",download=True)
+    lCOLOUR = 0 # irrelevant
+    lSHAPE = 1
+    lSCALE = 2
+    xDict = {}
+    yDict = {}
+    from tqdm import tqdm
+    tst = lSCALE
+    top = data
+    if bar:
+        top = tqdm(top)
+        top.set_description("dSprites")
+    for i in top:
+        a = i["latent"][lSHAPE].item()
+        b = i["latent"][lSCALE].item()
+        if (a,b) in xDict:
+            xDict[(a,b)].append(i['input'])
+            yDict[(a,b)].append(i['latent'])
+        else:
+            xDict[(a,b)] = [i['input']]
+            yDict[(a,b)] = [i['latent']]
+    xs = list(map(lambda x: x[1],xDict.items()))
+    ys = list(map(lambda x: x[1],yDict.items()))
+    train = {'x':xs,'y':ys}
+    test = {}
+    uit = {"train":train,"test":test}
+    return uit
+    
