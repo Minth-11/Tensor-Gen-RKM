@@ -24,15 +24,25 @@ def main():
     fold = 5
     h = multiViewCross(trData,fold,bar=True)
     
-    # for i in range(fold):
-        # f = h[i]
-        # for v in range(V):
-            # print( len( f["val"]['x'][v] ), end='\t')
-        # print()
-    
+    mvcp(h,fold,V)
+       
     # uit = trainDualTensorRBF(xData,hyper,bar=True)
     
     # sp.io.savemat("dSprites.mat",{"OmegaAdd":OmegaAdd,"OmegaMul":OmegaMul,"gamma":gam})
+
+def mvcp(flsd,nflds,nViews):
+    fold = nflds
+    h = flsd
+    V = nViews
+    for tv in ["train","val"]:
+        for xy in ['x','y']:
+            print(xy+':')
+            for i in range(fold):
+                f = h[i]
+                for v in range(V):
+                    print( len( f[tv][xy][v] ), end='\t')
+                print()
+            print()
 
 def multiViewCross(data,fold,bar=False):
     """
