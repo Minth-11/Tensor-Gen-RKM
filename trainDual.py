@@ -19,9 +19,16 @@ def main():
     
     trData = data["train"]
     xData = trData['x']
+    V = len(xData)
     
     fold = 5
     h = multiViewCross(trData,fold,bar=True)
+    
+    # for i in range(fold):
+        # f = h[i]
+        # for v in range(V):
+            # print( len( f["val"]['x'][v] ), end='\t')
+        # print()
     
     # uit = trainDualTensorRBF(xData,hyper,bar=True)
     
