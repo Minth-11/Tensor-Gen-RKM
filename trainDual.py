@@ -9,22 +9,40 @@ import scipy as sp
 def main():
 
     # hyper:
+    gam = 0.1
     rho = 0.3
     eta = 1.0
-    gam = 0.1
+    hyper = [gam, rho, eta]
 
-    # data = kolendaImageCaption()
-    data = dSprites(bar=True)
+    data = kolendaImageCaption()
+    # data = dSprites(bar=True)
     trData = data["train"]
-    xs = trData['x']
+    xData = trData['x']
     # print(xs[0][0])
-    # print(torch.is_sparse(xs[0][0]))
+    
+    uit = trainDualTensorRBF(xData,hyper,bar=True)
+    
+    sp.io.savemat("dSprites.mat",{"OmegaAdd":OmegaAdd,"OmegaMul":OmegaMul,"gamma":gam})
+    
+def trainDualTensorRBF(xData,hyper,bar=False):
+    gam = hyper[0]
+    rho = hyper[1]
+    eta = hyper[2]
+    xs  = xData
     V = len(xs)
     ksas = [{"gamma":gam} for i in range(0,V)]
-    K = [kernelMtxRBF(xs[i],ksas[i]) for i in tqdm(range(0,V))]
-    Omega = [centreMtx(K[i]) for i in tqdm(range(0,V))]
+    top = range(0,V)
+    if bar:
+        top = tqdm(top)
+        top.set_description("Kernelmtx")
+    K = [kernelMtxRBF(xs[i],ksas[i]) for i in top]
+    top = range(0,V)
+    if bar:
+        top = tqdm(top)
+        top.set_description("Centre K")
+    Omega = [centreMtx(K[i]) for i in top]
     N = K[0].shape[0]
-    OmegaAdd = np.zeros(N,N)
+    OmegaAdd = np.zeros((N,N))
     for i in Omega:
         OmegaAdd += i
     OmegaMul = np.ones((N,N))
@@ -32,10 +50,14 @@ def main():
         OmegaMul = OmegaMul * i
     OmegaTot = (1 - rho)*OmegaAdd + rho*OmegaMul
     L,S = torch.linalg.eigh(torch.from_numpy(OmegaTot/eta))
-    # plt.plot([np.log(i) for i in list(L)])
-    # plt.show()
-    sp.io.savemat("dSprites.mat",{"OmegaAdd":OmegaAdd,"OmegaMul":OmegaMul,"gamma":gam})
-   
+    uit = { "eigenvalues":L,
+            "eigenvectos":S,
+            "K":K, "Omega":Omega,
+            "OmegaAdd":OmegaAdd,
+            "OmegaMul":OmegaMul,
+            "OmegaTot":OmegaTot}
+    return uit
+    
 def kernelMtxRBF(x,ksas,bar=False,prt=''): # non-centered
     # ksas: kernel-specific arguments. dict.
     # here: gamma
