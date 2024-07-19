@@ -15,10 +15,9 @@ def main():
     hyper = [gam, rho, eta]
 
     data = kolendaImageCaption()
-    # data = dSprites(bar=True)
+    
     trData = data["train"]
     xData = trData['x']
-    # print(xs[0][0])
     
     uit = trainDualTensorRBF(xData,hyper,bar=True)
     
