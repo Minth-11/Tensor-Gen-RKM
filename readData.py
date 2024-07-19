@@ -48,13 +48,13 @@ def kolendaImageCaption():
     return uit
 
 def dSprites(bar=False):
-    """
-    Partition in 18 views
-    """
     data = DSprites(root="./data",download=True)
     lCOLOUR = 0 # irrelevant
     lSHAPE = 1
     lSCALE = 2
+    lORIENT = 3
+    lPOSX = 4
+    lPOSY = 5
     xDict = {}
     yDict = {}
     from tqdm import tqdm
@@ -64,13 +64,13 @@ def dSprites(bar=False):
         top = tqdm(top)
         top.set_description("dSprites")
     for i in top:
-        a = i["latent"][lSHAPE].item()
-        b = i["latent"][lSCALE].item()
+        a = i["latent"][lPOSX].item()
+        b = i["latent"][lPOSY].item()
         if (a,b) in xDict:
-            xDict[(a,b)].append(i['input'])
+            xDict[(a,b)].append(torch.reshape(i['input'],(-1,)))
             yDict[(a,b)].append(i['latent'])
         else:
-            xDict[(a,b)] = [i['input']]
+            xDict[(a,b)] = [torch.reshape(i['input'],(-1,))]
             yDict[(a,b)] = [i['latent']]
     xs = list(map(lambda x: x[1],xDict.items()))
     ys = list(map(lambda x: x[1],yDict.items()))
