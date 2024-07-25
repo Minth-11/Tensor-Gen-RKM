@@ -36,7 +36,7 @@ def mvcp(flsd,nflds,nViews):
     V = nViews
     for tv in ["train","val"]:
         for xy in ['x','y']:
-            print(xy+':')
+            print(xy+' '+tv+':')
             for i in range(fold):
                 f = h[i]
                 for v in range(V):
