@@ -4,8 +4,9 @@ from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.preprocessing import KernelCenterer
 import numpy as np
 from scipy.linalg import eigh
+import pickle
 
-NJOBS = None
+NJOBS = -1
 
 def main():
     # for tests
@@ -15,7 +16,9 @@ def main():
     path = path / "data" / "KolendaImageCaption" / "Kolenda_withNoise.mat"
     mat = loadmat(path)
     xs = mat["X"][0]
-    trainDual(xs,"rbf",0.6,1,gamma=1)
+    lambdas, hs = trainDual(xs,"rbf",0.6,1,gamma=1)
+    with open('modelKolenda.pkl', 'wb') as f:
+        pickle.dump({"lambdas":lambdas,"hs":hs}, f)
 
 def trainDual(xs,kernel,rho,eta,**kwargs):
     """
