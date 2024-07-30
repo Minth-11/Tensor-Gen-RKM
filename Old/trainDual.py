@@ -15,20 +15,20 @@ def main():
     eta = 1.0
     hyper = [gam, rho, eta]
 
-    data = kolendaImageCaption()
-    
+    data = dSprites()
+
     trData = data["train"]
     xData = trData['x']
     V = len(xData)
-    
-    fold = 5
-    h = multiViewCross(trData,fold,bar=True)
-    
-    mvcp(h,fold,V)
+
+#     fold = 5
+#     h = multiViewCross(trData,fold,bar=True)
+#
+#     mvcp(h,fold,V)
        
-    # uit = trainDualTensorRBF(xData,hyper,bar=True)
+    uit = trainDualTensorRBF(xData,hyper,bar=True)
     
-    # sp.io.savemat("dSprites.mat",{"OmegaAdd":OmegaAdd,"OmegaMul":OmegaMul,"gamma":gam})
+    sp.io.savemat("dSprites.mat",{"OmegaAdd":OmegaAdd,"OmegaMul":OmegaMul,"gamma":gam})
 
 def mvcp(flsd,nflds,nViews):
     fold = nflds
