@@ -5,6 +5,9 @@ from sklearn.preprocessing import KernelCenterer
 import numpy as np
 from scipy.linalg import eigh
 import pickle
+import matplotlib.pyplot as plt
+from torch.linalg import eigh
+import torch
 
 NJOBS = -1
 
@@ -41,13 +44,22 @@ def trainDual(xs,kernel,rho,eta,**kwargs):
         Ks.append(K) # (unneeded)
         trsfr = KernelCenterer().fit(K)
         Omegas.append( trsfr.transform(K))
+        plt.ion()
+        plt.matshow(trsfr.transform(K))
+        plt.show()
     # find procuct and -sum matrices
     OmegaAdd  = sum(Omegas)
     OmegaProd = np.prod( np.array(Omegas), axis=0 )
     # find end matrix
     OmegaTot = ((1-rho) * OmegaAdd) + (rho * OmegaProd)
     # eigenvalue problem: KPCA
-    lambdas,hs = eigh((1/eta) * OmegaTot)
+    # lambdas,hs = eigh((1/eta) * OmegaTot)
+    mt = torch.from_numpy((1/eta) * OmegaTot)
+    print("in torch")
+    if torch.cuda.is_available():
+        mt = mt.to(device='cuda')
+        print("in CUDA")
+    lambdas, hs = eigh(mt)
     return lambdas, hs
 
-main()
+# main()
